@@ -1,23 +1,18 @@
 import configparser
 import psycopg2
-from sql_queries import copy_table_queries, insert_table_queries
+from sql_queries import analyze_queries
 
 
-def load_staging_tables(cur, conn):
-    print("Starting to load the data")
-    for query in copy_table_queries:
+def analyze_tables_queries(cur):
+    print("Starting to analyze some queries")
+    for query in analyze_queries:
         cur.execute(query)
-        conn.commit()
-        print("Data loading is completed for query -- ", query)
-
-
-def insert_tables(cur, conn):
-    print("Starting to insert the data")
-    for query in insert_table_queries:
-        cur.execute(query)
-        conn.commit()
-        print("Data insertion is completed for the query -- ", query.split(" ")[2])
-
+        rows = cur.fetchall()
+        print(f"--------------------- SQL ----------------------------")
+        print(f"{query}")
+        for row in rows:
+            print(f"--------------------- ROW INFO -----------------------")
+            print(f"{row}")
 
 def main():
     config = configparser.ConfigParser()
@@ -40,8 +35,7 @@ def main():
     )
     cur = conn.cursor()
 
-    load_staging_tables(cur, conn)
-    insert_tables(cur, conn)
+    analyze_tables_queries(cur)
 
     conn.close()
 
