@@ -19,3 +19,13 @@
 5. Finally, to analyze queries an `python3 analyze_insertion.py`, test_sql.ipynb, test_aws.ipynb are utilized.
 6. Once everything is completed do not forget to terminate your cluster using `python3 IaC.py` and using `delete` in the prompt.
 
+## Tables Design:
+1. The staging tables follow the same data types as person the json data obtained through using pandas reading the json and performing a data.info(). In the same fashion the data types for columns are created. The timestamp convertion from unix timestamp to a timestamp had to be checked for proper working condition. It was noted that using `timestamp 'epoch' + cast(ts AS bigint)/1000 * interval '1 second'` works the best and is performant.
+2. Once, the staging tables are created, the sortkeys are assigned to timestamp column to the fact table (songplays) and the respective dimension table (time). In the similar fashion a distribution of the fact table by the timestamp is also done using distkey.
+3. In the similar way, the artist_id is a foreign key to the songs dimension table, so in order to achieve optimization through partitioning distkey is used. 
+
+## Analysis:  
+Some of analysis performed were:
+1. To know how many Mac and Windows users are using the sparkify app. It was noticed that the numbers for mac users are large.
+2. A count of all fact and dimension tables are generally taken to test the insertion.
+3. A query to get the songs for a given date is also tested.

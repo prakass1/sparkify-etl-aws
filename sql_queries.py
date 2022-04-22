@@ -223,7 +223,7 @@ insert_table_queries = [
 songs_query = """
 SELECT s.title, a.name, a.location FROM songs s
 JOIN artists a ON a.artist_id = s.artist_id
-WHERE year BETWEEN 2000 and 2005;
+WHERE year BETWEEN 2000 and 2005 LIMIT 10;
 """
 artists_query = """
 SELECT COUNT(*) FROM artists;
@@ -236,6 +236,9 @@ SELECT COUNT(*) FROM time;
 """
 songplays_query = """
 SELECT COUNT(*) FROM songplays;
+"""
+songs_count_query = """
+SELECT COUNT(*) FROM songs;
 """
 songplays_query_windows = """
 SELECT COUNT(*) as windows_users
@@ -251,6 +254,7 @@ WHERE songplays.user_agent LIKE '%Mac OS%';
 analyze_queries = [
     songs_query,
     artists_query,
+    songs_count_query,
     users_query,
     time_query,
     songplays_query,

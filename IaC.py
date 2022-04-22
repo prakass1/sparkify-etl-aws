@@ -1,15 +1,11 @@
 import boto3
 import click
 from dataclasses import dataclass
-from dotenv import load_dotenv
-import os
 import configparser
 import json
 from time import sleep
 from botocore.exceptions import ClientError
 
-# Load Environment Variables
-# load_dotenv()
 
 
 @dataclass

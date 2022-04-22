@@ -1,0 +1,76 @@
+root@3d8fa265b4aa:/home/workspace# python3 analyze_insertion.py 
+Starting to analyze some queries
+--------------------- SQL ----------------------------
+
+SELECT s.title, a.name, a.location FROM songs s
+JOIN artists a ON a.artist_id = s.artist_id
+WHERE year BETWEEN 2000 and 2005 LIMIT 10;
+
+--------------------- ROW INFO -----------------------
+('Jah Hold The Key', 'Devon Russell', '')
+--------------------- ROW INFO -----------------------
+('Hurry', 'Sleeping At Last', 'Wheaton, IL')
+--------------------- ROW INFO -----------------------
+('Trees (Hallway Of Leaves)', 'Sleeping At Last', 'Wheaton, IL')
+--------------------- ROW INFO -----------------------
+('EveryOne', 'Sleeping At Last', 'Wheaton, IL')
+--------------------- ROW INFO -----------------------
+('Night Must End', 'Sleeping At Last', 'Wheaton, IL')
+--------------------- ROW INFO -----------------------
+('All That Is Beautiful', 'Sleeping At Last', 'Wheaton, IL')
+--------------------- ROW INFO -----------------------
+('A Skeleton Of Something More', 'Sleeping At Last', 'Wheaton, IL')
+--------------------- ROW INFO -----------------------
+('Currents', 'Sleeping At Last', 'Wheaton, IL')
+--------------------- ROW INFO -----------------------
+('Say', 'Sleeping At Last', 'Wheaton, IL')
+--------------------- ROW INFO -----------------------
+('Brightly', 'Sleeping At Last', 'Wheaton, IL')
+--------------------- SQL ----------------------------
+
+SELECT COUNT(*) FROM songs;
+
+--------------------- ROW INFO -----------------------
+(384995,)
+--------------------- SQL ----------------------------
+
+SELECT COUNT(*) FROM artists;
+
+--------------------- ROW INFO -----------------------
+(45266,)
+--------------------- SQL ----------------------------
+
+SELECT COUNT(*) FROM users;
+
+--------------------- ROW INFO -----------------------
+(104,)
+--------------------- SQL ----------------------------
+
+SELECT COUNT(*) FROM time;
+
+--------------------- ROW INFO -----------------------
+(8023,)
+--------------------- SQL ----------------------------
+
+SELECT COUNT(*) FROM songplays;
+
+--------------------- ROW INFO -----------------------
+(6962,)
+--------------------- SQL ----------------------------
+
+SELECT COUNT(*) as windows_users
+FROM songplays
+WHERE songplays.user_agent LIKE '%Windows%'; 
+
+--------------------- ROW INFO -----------------------
+(2455,)
+--------------------- SQL ----------------------------
+
+SELECT COUNT(*) as mac_users
+FROM songplays
+WHERE songplays.user_agent LIKE '%Mac OS%'; 
+
+--------------------- ROW INFO -----------------------
+(3332,)
+root@3d8fa265b4aa:/home/workspace# 
+root@3d8fa265b4aa:/home/workspace# 
