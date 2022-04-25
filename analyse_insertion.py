@@ -4,6 +4,10 @@ from sql_queries import analyze_queries
 
 
 def analyze_tables_queries(cur):
+    """Analyze the fact and dimension queries
+        Args:
+            cur (obj): [The database connection cursor to perform sql query execution]
+    """
     print("Starting to analyze some queries")
     for query in analyze_queries:
         cur.execute(query)
@@ -15,6 +19,9 @@ def analyze_tables_queries(cur):
             print(f"{row}")
 
 def main():
+    """The main wrapper function which first initializes the configuration and calls the analysis query function to analyse
+    the fact and dimension table insertions.
+    """
     config = configparser.ConfigParser()
     config.read("dwh.cfg")
     HOST = config.get("CLUSTER", "HOST")

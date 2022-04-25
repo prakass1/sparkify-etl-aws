@@ -4,6 +4,12 @@ from sql_queries import copy_table_queries, insert_table_queries
 
 
 def load_staging_tables(cur, conn):
+    """ Loads the data into the staging through the COPY command to copy the data from S3 storage and insert for each of the copy table queries list.
+    
+    Args:
+    cur (obj): Database cursor obtained from the connection object.
+    conn (obj): Database Connection object obtained.
+    """
     print("Starting to load the data")
     for query in copy_table_queries:
         cur.execute(query)
@@ -12,6 +18,12 @@ def load_staging_tables(cur, conn):
 
 
 def insert_tables(cur, conn):
+    """ Inserts the data into the fact and dimension tables by utilizing the staging tables.
+    
+    Args:
+    cur (obj): Database cursor obtained from the connection object.
+    conn (obj): Database Connection object obtained.
+    """
     print("Starting to insert the data")
     for query in insert_table_queries:
         cur.execute(query)
@@ -20,6 +32,10 @@ def insert_tables(cur, conn):
 
 
 def main():
+    """ Acts as a wrapper which connects to the redshift cluster, then performs:
+    1. Extraction of the data from the S3 storage and staging the data into the staging tables.
+    2. Insertion of the data into the fact and dimension tables.
+    """
     config = configparser.ConfigParser()
     config.read("dwh.cfg")
     HOST = config.get("CLUSTER", "HOST")

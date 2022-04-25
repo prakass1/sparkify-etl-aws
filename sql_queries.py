@@ -1,3 +1,10 @@
+"""
+This python file provides the queries for the ingestion of the data from:
+1. Into the staging table
+2. Pull the data from staging into fact and dimension table.
+3. Verify by analyzing the fact and dimension tables via queries.
+"""
+
 import configparser
 
 # CONFIG
@@ -42,7 +49,7 @@ CREATE TABLE IF NOT EXISTS staging_events (
     location TEXT,
     method TEXT,
     page TEXT,
-    registration FLOAT,
+    registration VARCHAR,
     session_id INT,
     song TEXT,
     status INT,
@@ -154,16 +161,31 @@ se.session_id as session_id,
 se.location as location,
 se.user_agent as user_agent
 FROM staging_events se
-JOIN staging_songs ss ON (se.artist = ss.artist_name AND se.song = ss.title)
+JOIN staging_songs ss ON (se.artist = ss.artist_name AND se.song = ss.title AND se.length = ss.duration)
 WHERE se.page = 'NextSong';
 """
+# Older working approach: However, still keeps the duplicate user_id because level can change as the user time evolves.
+#user_table_insert = """
+#INSERT INTO users (user_id, first_name, last_name, gender, level)
+#SELECT DISTINCT(user_id) as user_id, first_name, last_name, gender, level
+#FROM staging_events
+#WHERE page='NextSong';
+#"""
+##########################################################
 
+# New Approach as per review:
 user_table_insert = """
 INSERT INTO users (user_id, first_name, last_name, gender, level)
-SELECT DISTINCT(user_id) as user_id, first_name, last_name, gender, level
-FROM staging_events
-WHERE page='NextSong';
+with unique_staging_events as (
+    SELECT user_id, first_name, last_name, gender, level, ROW_NUMBER() OVER(PARTITION BY user_id ORDER BY ts DESC) AS rank
+     FROM staging_events 
+    WHERE user_id IS NOT NULL
+)
+SELECT user_id, first_name, last_name, gender, level
+ FROM unique_staging_events
+WHERE rank=1;
 """
+
 
 song_table_insert = """
 INSERT INTO songs (song_id, title, artist_id, year, duration)
@@ -251,12 +273,17 @@ FROM songplays
 WHERE songplays.user_agent LIKE '%Mac OS%'; 
 """
 
+user_count_query = """
+SELECT user_id, COUNT(*) as count FROM users GROUP BY user_id ORDER BY count DESC;
+"""
+
 analyze_queries = [
     songs_query,
-    artists_query,
     songs_count_query,
+    artists_query,
     users_query,
     time_query,
+    user_count_query,
     songplays_query,
     songplays_query_windows,
     songplays_query_mac,

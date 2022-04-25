@@ -1,15 +1,20 @@
 import boto3
 import click
 from dataclasses import dataclass
+import os
 import configparser
 import json
 from time import sleep
 from botocore.exceptions import ClientError
 
+# Load Environment Variables
+# load_dotenv()
 
 
 @dataclass
 class Environments:
+    """ The environments datatable defined which outputs the updated information to be added into the dwh.cfg
+    """
     key: str
     secret: str
     region: str
@@ -25,6 +30,9 @@ class Environments:
 
 
 def init():
+    """ Initializes the Environment by reading the configuration.
+    
+    """
     # CONFIG
     config = configparser.ConfigParser()
     config.read("dwh.cfg")
@@ -48,6 +56,13 @@ def init():
 
 
 def attach_sg(ec2, props, envs):
+    """ Attaches the security group based on the provided properties and environment.
+    
+    Args:
+    ec2 (obj): [Boto3 ec2 object]
+    props (dict): [Dictionary object of the defined properties]
+    envs (Environment): [Class containing the environment data]
+    """
     try:
         vpc = ec2.Vpc(id=props["VpcId"])
         defaultSg = list(vpc.security_groups.all())[0]
@@ -67,6 +82,13 @@ def attach_sg(ec2, props, envs):
 
 
 def create_cluster(ec2, redshift, envs):
+    """ Creates the redshift cluster based upon the provided environmental data as configurations.
+    
+    Args:
+    ec2 (obj): [Boto3 ec2 object]
+    redshift (obj): [Boto3 redshift object]
+    envs (Environment): [Class containing the environment data]
+    """
     try:
         response = redshift.create_cluster(
             # HW
@@ -128,6 +150,12 @@ def create_cluster(ec2, redshift, envs):
 
 
 def teardown_cluster(redshift, envs):
+    """ Delete the redshift cluster based upon the provided environmental data as configurations.
+    
+    Args:
+    redshift (obj): [Boto3 redshift object]
+    envs (Environment): [Class containing the environment data]
+    """
     try:
         response = redshift.delete_cluster(
             ClusterIdentifier=envs["cluster_identifier"], SkipFinalClusterSnapshot=True
@@ -157,6 +185,12 @@ def teardown_cluster(redshift, envs):
 
 
 def create_iam_role(iam, envs):
+    """ Creates the IAM role to allow redshift cluster to call AWS Services using the environmental data as configurations.
+    
+    Args:
+    iam (obj): [Boto3 ec2 object]
+    envs (Environment): [Class containing the environment data]
+    """
     try:
         response = iam.create_role(
             Path="/",
@@ -190,6 +224,11 @@ def create_iam_role(iam, envs):
 )
 def do_work(name):
     # init the environment variables
+    """ This is a wrapper function which first based on the options (create/delete/delete_role) obtained from commandline
+    will utilize that and perform creation of cluster, deletion etc..
+    
+    Args (name): [The value user provides from the commandline]
+    """
     try:
         envs = init()
         if envs != -1:
